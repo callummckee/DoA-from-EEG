@@ -5,7 +5,9 @@ from mobility import *
 from logistic_regression import *
 from permutationentropy import *
 from utils import *
+from lempelziv import *
 from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
 
 sampling_rate = 128 #Hz
 
@@ -58,19 +60,35 @@ length = len(case1_beta_time_domain)
 print(f'case1EEG.shape[1]: {case1EEG.shape[1]}')
 print(f'case1_beta time domain length: {length}')
 
+symbolic_sequence = translate_to_symbolic_sequence(case1_beta_time_domain)
 
+print(case1_beta_time_domain[:20])
+print(symbolic_sequence[:20])
+
+count_words(symbolic_sequence)
+
+
+##PERMUTATION ENTROPY TESTS ##
+"""
 case1_beta_frequency = calculate_new_sampling_rate(case1EEG.shape[1], sampling_rate, length)
 
+case1_beta_PE = PE(case1_beta_time_domain, case1_beta_frequency, window_overlap=0.5)
 
-PE_vectors = create_m_dimension_vectors(case1_beta_time_domain, m, case1_beta_frequency, time_delay, overlap)
-print(PE_vectors[:5])
+print(f'case 1 beta PE = {case1_beta_PE} with length {len(case1_beta_PE)}')
 
-PE_vectors_sorted = PE_sort(PE_vectors)
-print(PE_vectors_sorted[:5])
+case1_beta_PE = np.array(case1_beta_PE[::2]).reshape(-1, 1)
+case1BIS_scaled = case1BIS.flatten()[12:]
+print(len(case1BIS_scaled))
 
-possible_orders = possible_orders(4)
+alpha = 1e-3
 
-PE = permutation_entropy(possible_orders, PE_vectors_sorted)
+model = LinearRegression()
+model.fit(case1_beta_PE, case1BIS_scaled)
 
-print(f'PE: {PE}')
+predicted_values = model.predict(case1_beta_PE)
 
+print("Coefficient:", model.coef_)
+print("Intercept:", model.intercept_)
+r2 = r2_score(case1BIS_scaled, predicted_values)
+print(f'R2 = {r2}')
+"""

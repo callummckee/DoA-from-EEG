@@ -3,10 +3,9 @@ from itertools import permutations
 from math import log
 
 time_delay = 5 #s
-overlap = 0.5 #as a fraction
-m = 4
+pe_vector_overlap = 0.5 #as a fraction
 
-def create_m_dimension_vectors(data, m, sampling_rate, time_delay, overlap):
+def create_m_dimension_vectors(data, m, sampling_rate, overlap, L = 1):
     """
     m is the embedding dimension
     overlap is a fraction representing the proportion of each previous vector that is present in the subsequent vector
@@ -14,14 +13,8 @@ def create_m_dimension_vectors(data, m, sampling_rate, time_delay, overlap):
     returns X, a set of m-dimension vectors
     """
     X = []
-    print(f'sampling_rate = {sampling_rate}')
-    print(f'time_delay = {time_delay}')
-    L = sampling_rate * time_delay
-    print(f'L: {L}')
     signal_dim = data.shape[0]
-    print(f'signal_dim = {signal_dim}')
     step_size = int(m * L * (1 - overlap))
-    print(f'step_size: {step_size}')
 
     for i in range(0, signal_dim - (m*L) + 1, step_size):
         x = []
@@ -57,11 +50,41 @@ def possible_orders(m):
     return M
 
 
-def permutation_entropy(possible_orders, index_vectors):
+def entropy_calculation(possible_orders, index_vectors):
     PE = 0
     for order in possible_orders:
         count = index_vectors.count(order)
-        p_i =   count/len(index_vectors)
-        PE += p_i*(log(p_i))
+        if count > 0:
+            p_i =   count/len(index_vectors)
+            PE += p_i*(log(p_i))
     
     return -PE
+
+def create_windows(data, sampling_rate, window_length, overlap):
+    """
+    data is an array of EEG signals with a frequency of sampling_rate
+    returns an array whose elements are arrays with data of duration window_length (in seconds)
+    overlap is a fraction representing the portion of each window that is present in the previous window
+    """
+    window_array = []
+    data_length = len(data)
+    window_length_samples = int(sampling_rate * window_length)
+    step_size = int((1 - overlap) * window_length_samples)
+    for i in range(0, data_length - window_length_samples + 1, step_size):
+        window_array.append(data[i:i + window_length_samples])
+    return window_array
+
+def PE(data, sampling_rate, pe_vector_overlap = 0.5, window_overlap = 0.5, window_length = 5, m = 4):
+    window_array = create_windows(data, sampling_rate, window_length, window_overlap)
+    orders = possible_orders(m)
+
+    pe_array = []
+
+    for window in window_array:
+        m_dimension_vectors = create_m_dimension_vectors(window, m, sampling_rate, pe_vector_overlap)
+        index_vectors = PE_sort(m_dimension_vectors)
+        pe = entropy_calculation(orders, index_vectors)
+        pe_array.append(pe)
+    return pe_array
+
+
