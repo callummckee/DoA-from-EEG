@@ -12,8 +12,5 @@ def import_(num_of_cases):
     return data
 
 data = import_(24)
-#Assumed that BIS sampling rate is 0.2Hz and EEG sampling rate is 125Hz
 
-#print(case1)
-#print(f"EEG length: {len(case1['EEG'][0])} BIS length: {len(case1['bis'][0])}")
 

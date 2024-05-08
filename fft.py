@@ -9,16 +9,13 @@ bands = {
     'Gamma' : (38.5, 64)
 }
 
-def fft(data, sampling_rate = 125):
+def fft(data, sampling_rate = 128):
     data = data[0] #fix later if dimension of array is > 1 reshape to 1
     fft_result = np.fft.fft(data)
-    print("fft_result ", fft_result, "shape ", fft_result.shape)
     frequencies = np.fft.fftfreq(len(data), 1/sampling_rate)
-    print("frequencies ", frequencies, "shape ", frequencies.shape)
     band_array = {}
     for band_name, (low, high) in bands.items():
         band_filter = (frequencies >=low) & (frequencies <= high)
-        print("band_filter ", band_filter)
         band_array[band_name] = fft_result[band_filter]
     return band_array
 

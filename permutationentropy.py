@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import permutations
 from math import log
+from utils import create_windows
 
 time_delay = 5 #s
 pe_vector_overlap = 0.5 #as a fraction
@@ -13,7 +14,7 @@ def create_m_dimension_vectors(data, m, sampling_rate, overlap, L = 1):
     returns X, a set of m-dimension vectors
     """
     X = []
-    signal_dim = data.shape[0]
+    signal_dim = len(data)
     step_size = int(m * L * (1 - overlap))
 
     for i in range(0, signal_dim - (m*L) + 1, step_size):
@@ -60,20 +61,6 @@ def entropy_calculation(possible_orders, index_vectors):
     
     return -PE
 
-def create_windows(data, sampling_rate, window_length, overlap):
-    """
-    data is an array of EEG signals with a frequency of sampling_rate
-    returns an array whose elements are arrays with data of duration window_length (in seconds)
-    overlap is a fraction representing the portion of each window that is present in the previous window
-    """
-    window_array = []
-    data_length = len(data)
-    window_length_samples = int(sampling_rate * window_length)
-    step_size = int((1 - overlap) * window_length_samples)
-    for i in range(0, data_length - window_length_samples + 1, step_size):
-        window_array.append(data[i:i + window_length_samples])
-    window_array = [window.tolist() for window in window_array]
-    return window_array
 
 def PE(data, sampling_rate, pe_vector_overlap = 0.5, window_overlap = 0.5, window_length = 5, m = 4):
     window_array = create_windows(data, sampling_rate, window_length, window_overlap)
