@@ -72,6 +72,7 @@ def create_windows(data, sampling_rate, window_length, overlap):
     step_size = int((1 - overlap) * window_length_samples)
     for i in range(0, data_length - window_length_samples + 1, step_size):
         window_array.append(data[i:i + window_length_samples])
+    window_array = [window.tolist() for window in window_array]
     return window_array
 
 def PE(data, sampling_rate, pe_vector_overlap = 0.5, window_overlap = 0.5, window_length = 5, m = 4):

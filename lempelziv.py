@@ -1,4 +1,5 @@
 import numpy as np
+from math import log2
 
 def translate_to_symbolic_sequence(data):
     """
@@ -19,7 +20,8 @@ def translate_to_symbolic_sequence(data):
 def count_words(symbolic_sequence):
     words = []
     length = len(symbolic_sequence)
-    for i in range(length):
+    i = 0
+    while i < length:
         word = [symbolic_sequence[i]]
         while word in words:
             i += 1
@@ -28,14 +30,17 @@ def count_words(symbolic_sequence):
                 print(f'distinct words: {len(words)}')
                 return len(words)
             word.append(symbolic_sequence[i])
-        print(f'i: {i}')
-        print(f'word to be appended: {word}')
-        print(f'word list: {words}')
         words.append(word)
-
+        i += 1
     print(f'words: {words}')
     print(f'distinct words: {len(words)}')
     return len(words)
+
+def calculateLZC(distinct_words, signal_length):
+    lzc = (distinct_words*(log2(distinct_words) + 1))/signal_length
+    return lzc
+
+
 
     
 

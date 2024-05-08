@@ -57,20 +57,26 @@ case1_beta_mobility, case1_beta_interval = calculate_mobility(band_array["Beta"]
 case1_beta_time_domain = np.fft.ifft(band_array["Beta"]).real
 length = len(case1_beta_time_domain)
 
-print(f'case1EEG.shape[1]: {case1EEG.shape[1]}')
-print(f'case1_beta time domain length: {length}')
+case1_beta_frequency = calculate_new_sampling_rate(case1EEG.shape[1], sampling_rate, length)
 
-symbolic_sequence = translate_to_symbolic_sequence(case1_beta_time_domain)
+window_array = create_windows(case1_beta_time_domain, case1_beta_frequency, 5, 0.5)
 
-print(case1_beta_time_domain[:20])
-print(symbolic_sequence[:20])
+first_window = window_array[0]
 
-count_words(symbolic_sequence)
+print(f'first window length: {len(first_window)}')
+
+symbolic_sequence = translate_to_symbolic_sequence(first_window)
+
+print(f'first window: {first_window}')
+print(f'symbolic sequence: {symbolic_sequence}')
+distinct_words = count_words(symbolic_sequence)
+
+print(calculateLZC(35, 130))
+
 
 
 ##PERMUTATION ENTROPY TESTS ##
 """
-case1_beta_frequency = calculate_new_sampling_rate(case1EEG.shape[1], sampling_rate, length)
 
 case1_beta_PE = PE(case1_beta_time_domain, case1_beta_frequency, window_overlap=0.5)
 
