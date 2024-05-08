@@ -1,6 +1,3 @@
-import numpy as np
-
-from NLM import *
 from importdata import data
 from fft import *
 from mobility import *
@@ -13,62 +10,30 @@ from sklearn.linear_model import LinearRegression
 
 sampling_rate = 128 #Hz
 
-#print(f'data: {type(data)}')
-#print(f'data[0] type: {type(data[0])}')
-
 train_data = data[::2] #select every second case for training
     
 eeg_train_data = [case['EEG'] for case in train_data]
 bis_train_data = [case['bis'] for case in train_data]
-#print(f'eeg_train_data: {eeg_train_data}')
-#print(f'bis train data: {bis_train_data}')
 
 decomposed_eeg_train_data = [fft(case) for case in eeg_train_data]
-
-#print(f'decomposed_eeg_train_data: {decomposed_eeg_train_data}')
-
-
-def convert_decomposed_to_time_domain(decomposed_frequency_data):
-    decomposed_time_domain = []
-    number_of_cases = len(decomposed_frequency_data)
-    for i in range(number_of_cases):
-        case_time_domain = {}
-        for frequency_band, band_data in decomposed_frequency_data[i].items():
-            frequency_band_time_domain = np.fft.ifft(band_data).real #converts the data in the frequency band to the time domain and takes the real part
-            case_time_domain[frequency_band] = frequency_band_time_domain
-        decomposed_time_domain.append(case_time_domain)
-    return decomposed_time_domain
-
 decomposed_eeg_train_time_domain = convert_decomposed_to_time_domain(decomposed_eeg_train_data)
-print(f'decomposed_eeg_train_time_domain: {decomposed_eeg_train_time_domain}')
-
-
+decomposed_eeg_train_time_domain_power = convert_decomposed_amplitude_to_power(decomposed_eeg_train_time_domain)
 
 signal_lengths = [len(case[0]) for case in eeg_train_data] 
 
+mobility_amplitude_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, calculate_mobility, sampling_rate, signal_lengths)
+print(f'mobility amplitude array length: {len(mobility_amplitude_array)}')
+pe_amplitude_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, PE, sampling_rate, signal_lengths)
+print(f'pe array amplitude length: {len(pe_amplitude_array)}')
+lzc_amplitude_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, LZC_single_band, sampling_rate, signal_lengths)
+print(f'lzc array amplitude length: {len(lzc_amplitude_array)}')
 
-def operation_on_multiple_case_data(decomposed_time_domain_data, operation, original_signal_sample_rate):
-    output = []
-    number_of_cases = len(decomposed_time_domain_data)
-    for i in range(number_of_cases):
-        case_output = {}
-        for frequency_band, band_data in decomposed_time_domain_data[i].items():
-            new_sample_rate = calculate_new_sampling_rate(signal_lengths[i], original_signal_sample_rate, len(band_data))
-            frequency_band_output = operation(band_data, new_sample_rate)
-            case_output[frequency_band] = frequency_band_output
-        output.append(case_output)
-    return output
-
-mobility_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, calculate_mobility, original_signal_sample_rate=128)
-print(f'mobility array length: {len(mobility_array)}')
-
-
-pe_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, PE, original_signal_sample_rate=128)
-print(f'pe array length: {len(pe_array)}')
-
-
-lzc_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain, LZC_single_band, original_signal_sample_rate=128)
-print(f'lzc array length: {len(lzc_array)}')
+mobility_power_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain_power, calculate_mobility, sampling_rate, signal_lengths)
+print(f'mobility array length: {len(mobility_amplitude_array)}')
+pe_power_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain_power, PE, sampling_rate, signal_lengths)
+print(f'pe array length: {len(pe_amplitude_array)}')
+lzc_power_array = operation_on_multiple_case_data(decomposed_eeg_train_time_domain_power, LZC_single_band, sampling_rate, signal_lengths)
+print(f'lzc array length: {len(lzc_amplitude_array)}')
 
 
 
@@ -83,7 +48,9 @@ print(f'lzc array length: {len(lzc_array)}')
 
 
 
-##PERMUTATION ENTROPY TESTS ##
+
+
+
 """
 
 model = LinearRegression()

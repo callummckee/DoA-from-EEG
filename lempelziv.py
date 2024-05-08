@@ -9,7 +9,6 @@ def translate_to_symbolic_sequence(data):
     the threshold value, a 1 is added to the sequence, if it is less a 0 is added to the sequence.
     """
     threshold = np.median(data)
-    print(f'threshold: {threshold}')
     symbolic_sequence = []
     for value in data:
         if value >= threshold:
@@ -27,13 +26,10 @@ def count_words(symbolic_sequence):
         while word in words:
             i += 1
             if i == length:
-                print(f'words: {words}')
-                print(f'distinct words: {len(words)}')
                 return len(words)
             word.append(symbolic_sequence[i])
         words.append(word)
         i += 1
-    print(f'distinct words: {len(words)}')
     return len(words)
 
 def calculateLZC(distinct_words, signal_length):
