@@ -1,16 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 bands = {
     'Delta' : (0.5, 3.5),
     'Theta' : (3.5, 7),
     'Alpha' : (7, 13),
     'Beta' : (13, 38.5), 
-    'Gamma' : (38.5, 64)
+    'Gamma' : (38.5, 64),
+    'Beta b': (21.5, 30),
+    'Gamma 1': (30, 38.5),
+    'Gamma 2': (38.6, 47),
+    'Gamma 3': (47, 55.5), 
+    'Gamma 4': (55.5, 64),
+    'Gamma a': (30, 47), 
+    'Gamma b': (47, 64),
+    'Beta a': (13, 21.5),
+    'Alpha a': (7, 10),
+    'Alpha b': (10, 13), 
+    'Beta 1': (13, 17),
+    'Beta 2': (17, 21.5), 
+    'Beta 3': (21.5, 26), 
+    'Beta 4': (26, 30), 
+    'Beta gamma': (21.5, 38.5)
 }
 
-def fft(data, sampling_rate = 128):
-    data = data[0] #fix later if dimension of array is > 1 reshape to 1
+def fft(data, sampling_rate):
+    data = data[0]
     fft_result = np.fft.fft(data)
     frequencies = np.fft.fftfreq(len(data), 1/sampling_rate)
     band_array = {}
