@@ -18,6 +18,15 @@ def translate_to_symbolic_sequence(data):
     return symbolic_sequence
 
 def count_words(symbolic_sequence):
+    """
+    Produces a sequence of "words" (binary sequences), W, from the symbolic sequence with
+    the following method. 
+    The first word is the the first element of the symbolic sequence. Each subsequent word
+    is the shortest that can be constructed from consecutive elements of the symbolic sequence
+    that has not yet appeared in W. 
+    
+    Returns the number of distinct words in W.
+    """
     words = []
     length = len(symbolic_sequence)
     i = 0
