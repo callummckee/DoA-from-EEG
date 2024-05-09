@@ -77,32 +77,24 @@ def associate_features_with_BIS(feature_array, bis_data, window_length, window_o
     two nested arrays of the same length reprenting the feature values and the associated BIS values.
     """
     frequency_band_output = {}
-    number_of_cases = len(feature_array)
     duration = window_length * window_overlap #seconds per data point in feature_array
-    bis_duration = 1/bis_sample_rate #seconds per data point in bis_data
-    scaling_factor = int(round(bis_duration/duration))
-    print(f'scaling_factor: {scaling_factor}')
+    bis_interval = 1/bis_sample_rate 
+    scaling_factor = max (1, int(round(bis_interval / duration)))
+    
     for frequency_band in feature_array[0].keys():
         frequency_band_values = []
         bis_values = []
-        print(f'frequency_band: {frequency_band}')
-        for i in range(number_of_cases):
-            print(f'length of unscaled feature data: {len(feature_array[i][frequency_band])}')
-            if scaling_factor > 0:
-                feature_data = feature_array[i][frequency_band][::scaling_factor]
-            else:
-                feature_data = feature_array[i][frequency_band]
-            feature_data_length = len(feature_data)
-            flattened_bis = bis_data[i].flatten() #probably move outside of function
-            print(f'length of untrimmed bis: {len(flattened_bis)}')
-            flattened_bis_length = len(flattened_bis)
-            if flattened_bis_length > feature_data_length:
-                scaled_bis_data = flattened_bis[flattened_bis_length - feature_data_length:].tolist()
-            elif feature_data_length > flattened_bis_length:
-                feature_data = feature_data[feature_data_length - flattened_bis_length:]
-                scaled_bis_data = flattened_bis.tolist()
-            frequency_band_values += feature_data
-            bis_values += scaled_bis_data
+        for i in range(len(feature_array)):
+            feature_data = feature_array[i][frequency_band][::scaling_factor]
+            feature_length = len(feature_data)
+            bis_flat = bis_data[i].flatten() #probably move outside of function
+            bis_length = len(bis_flat)
+            min_length = min(feature_length, bis_length)
+            feature_data = feature_data[-min_length:]
+            bis_flat = bis_flat[-min_length:]
+
+            frequency_band_values.extend(feature_data)
+            bis_values.extend(bis_flat)
         frequency_band_output[frequency_band] = [frequency_band_values, bis_values]
     
     return frequency_band_output
