@@ -3,18 +3,11 @@ import math
 import matplotlib.pyplot as plt
 from utils import *
 
-window_seconds = 56 
-overlap_seconds = 55 #s
-sampling_rate = 128 #Hz
 
-
-def calculate_mobility(band_data, sampling_rate, window_seconds = 56, overlap_seconds = 55):
+def calculate_mobility(band_data, sampling_rate, window_seconds, window_overlap):
     mobility_array = []
-    length = len(band_data)
 
-    overlap_as_fraction = overlap_seconds/window_seconds
-
-    window_array = create_windows(band_data, sampling_rate, window_seconds, overlap_as_fraction)
+    window_array = create_windows(band_data, sampling_rate, window_seconds, window_overlap)
 
     for window in window_array:
         window_derivative = np.gradient(window)

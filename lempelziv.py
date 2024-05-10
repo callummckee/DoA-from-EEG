@@ -45,7 +45,7 @@ def calculateLZC(distinct_words, signal_length):
     lzc = (distinct_words*(log2(distinct_words) + 1))/signal_length
     return lzc
 
-def LZC_single_band(data, sampling_rate, window_length = 5, window_overlap = 0.5):
+def LZC_single_band(data, sampling_rate, window_length, window_overlap):
     window_array = create_windows(data, sampling_rate, window_length, window_overlap)
 
     lzc_array = []

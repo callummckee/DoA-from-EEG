@@ -2,11 +2,10 @@ import numpy as np
 from itertools import permutations
 from math import log
 from utils import create_windows
+from parameters import *
 
-time_delay = 5 #s
-pe_vector_overlap = 0.5 #as a fraction
 
-def create_m_dimension_vectors(data, m, sampling_rate, overlap, L = 1):
+def create_m_dimension_vectors(data, m, sampling_rate, overlap, L):
     """
     m is the embedding dimension
     overlap is a fraction representing the proportion of each previous vector that is present in the subsequent vector
@@ -62,14 +61,14 @@ def entropy_calculation(possible_orders, index_vectors):
     return -PE
 
 
-def PE(data, sampling_rate, pe_vector_overlap = 0.5, window_overlap = 0.5, window_length = 5, m = 4):
+def PE(data, sampling_rate, window_length, window_overlap , pe_vector_overlap = pe_vector_overlap, m = pe_m, L = pe_L):
     window_array = create_windows(data, sampling_rate, window_length, window_overlap)
     orders = possible_orders(m)
 
     pe_array = []
 
     for window in window_array:
-        m_dimension_vectors = create_m_dimension_vectors(window, m, sampling_rate, pe_vector_overlap)
+        m_dimension_vectors = create_m_dimension_vectors(window, m, sampling_rate, pe_vector_overlap, L)
         index_vectors = PE_sort(m_dimension_vectors)
         pe = entropy_calculation(orders, index_vectors)
         pe_array.append(pe)

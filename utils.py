@@ -16,7 +16,7 @@ def create_windows(data, sampling_rate, window_length, overlap):
     window_array = []
     data_length = len(data)
     window_length_samples = int(sampling_rate * window_length)
-    step_size = int((1 - overlap) * window_length_samples)
+    step_size = max(1, int((1 - overlap) * window_length_samples))
     for i in range(0, data_length - window_length_samples + 1, step_size):
         window_array.append(data[i:i + window_length_samples])
     return window_array
@@ -38,7 +38,7 @@ def convert_decomposed_to_time_domain(decomposed_frequency_data):
         decomposed_time_domain.append(case_time_domain)
     return decomposed_time_domain
 
-def operation_on_multiple_case_data(decomposed_time_domain_data, operation, original_signal_sample_rate, original_signal_lengths):
+def operation_on_multiple_case_data(decomposed_time_domain_data, operation, original_signal_sample_rate, original_signal_lengths, window_length, window_overlap):
     """
     Extracts features from an 'decomposed_time_domain_data' using the function 'operation'.
     """
@@ -48,7 +48,7 @@ def operation_on_multiple_case_data(decomposed_time_domain_data, operation, orig
         case_output = {}
         for frequency_band, band_data in decomposed_time_domain_data[i].items():
             new_sample_rate = calculate_new_sampling_rate(original_signal_lengths[i], original_signal_sample_rate, len(band_data))
-            frequency_band_output = operation(band_data, new_sample_rate)
+            frequency_band_output = operation(band_data, new_sample_rate, window_length, window_overlap)
             case_output[frequency_band] = frequency_band_output
         output.append(case_output)
     return output
@@ -77,7 +77,7 @@ def associate_features_with_BIS(feature_array, bis_data, window_length, window_o
     two nested arrays of the same length reprenting the feature values and the associated BIS values.
     """
     frequency_band_output = {}
-    duration = window_length * window_overlap #seconds per data point in feature_array
+    duration = window_length * (1 - window_overlap) #seconds per data point in feature_array
     bis_interval = 1/bis_sample_rate 
     scaling_factor = max (1, int(round(bis_interval / duration)))
     
