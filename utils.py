@@ -116,10 +116,6 @@ def linear_regression(feature_bis_dict):
 
         predicted_values = model.predict(data[0])
 
-        print(frequency_band)
-        print("Coefficient:", model.coef_)
-        print("Intercept:", model.intercept_)
-
         r2 = r2_score(data[1], predicted_values)
         correlation_by_band[frequency_band] = r2
     
