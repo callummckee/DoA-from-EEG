@@ -26,7 +26,13 @@ bands = {
 }
 
 def fft(data, sampling_rate):
-    data = data[0]
+    """
+    Decomposes time domain signal into the frequency bands outlined in 'bands'.
+    'data' is a one dimensional list of signal values.
+    'sampling_rate' specifies the frequency of the data in Hz.
+    Returns a dictionary object where the keys are the same as 'bands' and the values are
+    complex numbers representing amplitude and phase information across the range of values specified in 'bands'.
+    """
     fft_result = np.fft.fft(data)
     frequencies = np.fft.fftfreq(len(data), 1/sampling_rate)
     band_array = {}
