@@ -95,6 +95,13 @@ def associate_features_with_BIS(feature_array, bis_data, window_length, window_o
             feature_data = feature_data[-min_length:]
             bis_flat = bis_flat[-min_length:]
 
+            valid_indices = [index for index, value in enumerate(bis_flat) if value != -1] #BIS data contains values of -1, assuming this means no valid BIS value was produced at these points
+            feature_data = [feature_data[j] for j in valid_indices if j < len(feature_data)]
+            bis_flat = [bis_flat[j] for j in valid_indices]
+
+            print(f'length feature data: {len(feature_data)}')
+            print(f'length of bis_flat: {len(bis_flat)}')
+
             frequency_band_values.extend(feature_data)
             bis_values.extend(bis_flat)
         frequency_band_output[frequency_band] = [frequency_band_values, bis_values]
@@ -113,6 +120,7 @@ def linear_regression(feature_bis_dict):
         model = LinearRegression()
         data[0] = np.array(data[0]).reshape(-1, 1)
         data[1] = np.array(data[1])
+        print(f'frequency band: {frequency_band}, bis shape: {data[1].shape}')
         model.fit(data[0], data[1])
 
         predicted_values = model.predict(data[0])

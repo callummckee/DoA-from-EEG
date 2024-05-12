@@ -6,4 +6,6 @@ This is my first attempt at anything related to signal processing or time-series
 
 Graphs displaying the coefficient of determination for each extracted feature for each frequency band can be found in the Graphs folder. The x-axis of the graphs represents the frequency bands defined in fft.py with indices 1-20 representing the amplitude of these frequency bands and indices 21-40 representing the power.
 
+The correlation values produced were poor. In light of this I will thoroughly review the code for bugs, investigate if improved correlation is present at varying BIS values, and check if the data can be denoised any further. 
+
 
