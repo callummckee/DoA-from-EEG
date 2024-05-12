@@ -40,7 +40,7 @@ def convert_decomposed_to_time_domain(decomposed_frequency_data):
 
 def operation_on_multiple_case_data(decomposed_time_domain_data, operation, original_signal_sample_rate, original_signal_lengths, window_length, window_overlap):
     """
-    Extracts features from an 'decomposed_time_domain_data' using the function 'operation'.
+    Extracts features from 'decomposed_time_domain_data' using the function 'operation'.
     """
     output = []
     number_of_cases = len(decomposed_time_domain_data)
@@ -55,7 +55,8 @@ def operation_on_multiple_case_data(decomposed_time_domain_data, operation, orig
     
 def convert_decomposed_amplitude_to_power(decomposed_time_domain_data):
     """
-    Takes an array where each element is a dictionary 
+    Takes an array where each element is a dictionary whose keys are frequency bands and values are the the amplitude of these frequency bands in the time domain.
+    Returns a similar array where the values are the power of the frequency bands in the time domain.
     """
     output = []
     number_of_cases = len(decomposed_time_domain_data)
@@ -73,8 +74,9 @@ def convert_decomposed_amplitude_to_power(decomposed_time_domain_data):
 def associate_features_with_BIS(feature_array, bis_data, window_length, window_overlap, bis_sample_rate):
     """
     Combines the features for frequency bands across cases, scales both these features and the associated BIS data such
-    that they are of the same length. Returns a dictionary where the keys are frequency bands and the values are an array with 
-    two nested arrays of the same length reprenting the feature values and the associated BIS values.
+    that they are of the same length. Returns a dictionary where the keys are frequency bands and the values are an array containing 
+    two nested arrays of the same length representing the feature values and the associated BIS values scaled such that the value of each at any
+    given index represents the same point in time. 
     """
     frequency_band_output = {}
     duration = window_length * (1 - window_overlap) #seconds per data point in feature_array
@@ -87,7 +89,7 @@ def associate_features_with_BIS(feature_array, bis_data, window_length, window_o
         for i in range(len(feature_array)):
             feature_data = feature_array[i][frequency_band][::scaling_factor]
             feature_length = len(feature_data)
-            bis_flat = bis_data[i].flatten() #probably move outside of function
+            bis_flat = bis_data[i].flatten()
             bis_length = len(bis_flat)
             min_length = min(feature_length, bis_length)
             feature_data = feature_data[-min_length:]
@@ -99,14 +101,13 @@ def associate_features_with_BIS(feature_array, bis_data, window_length, window_o
     
     return frequency_band_output
 
-def test_associate_features_with_bis(feature_bis_dict):
-    for frequency_band in feature_bis_dict.keys():
-        print(frequency_band)
-        print(f'values_length: {len(feature_bis_dict[frequency_band][0])}')
-        print(f'bis_length: {len(feature_bis_dict[frequency_band][1])}')
-    return
-
 def linear_regression(feature_bis_dict):
+    """
+    'feature_bis_dict' is an object such as that returned by 'associate_features_with_BIS'. 
+    Performs linear regression and calculates the coefficient of determination.
+    Returns a dictionary where the keys are frequency bands and the values are the coefficient of determination for the feature extracted from that
+    frequency band and the BIS value.
+    """
     correlation_by_band = {}
     for frequency_band, data in feature_bis_dict.items():
         model = LinearRegression()
