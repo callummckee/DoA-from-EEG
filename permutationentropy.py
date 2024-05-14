@@ -5,7 +5,7 @@ from utils import create_windows
 from parameters import *
 
 
-def create_m_dimension_vectors(data, m, sampling_rate, overlap, L):
+def create_m_dimension_vectors(data, m, overlap, L):
     """
     m is the embedding dimension
     overlap is a fraction representing the proportion of each previous vector that is present in the subsequent vector
@@ -68,7 +68,7 @@ def PE(data, sampling_rate, window_length, window_overlap , pe_vector_overlap = 
     pe_array = []
 
     for window in window_array:
-        m_dimension_vectors = create_m_dimension_vectors(window, m, sampling_rate, pe_vector_overlap, L)
+        m_dimension_vectors = create_m_dimension_vectors(window, m, pe_vector_overlap, L)
         index_vectors = PE_sort(m_dimension_vectors)
         pe = entropy_calculation(orders, index_vectors)
         pe_array.append(pe)
