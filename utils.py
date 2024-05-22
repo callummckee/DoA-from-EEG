@@ -19,6 +19,9 @@ def create_windows(data, sampling_rate, window_length, overlap):
     step_size = max(1, int((1 - overlap) * window_length_samples))
     for i in range(0, data_length - window_length_samples + 1, step_size):
         window_array.append(data[i:i + window_length_samples])
+
+    if (len(data) - window_length_samples) % step_size != 0:
+        window_array.append(data[-window_length_samples:])
     return window_array
 
 def convert_decomposed_to_time_domain(decomposed_frequency_data):
