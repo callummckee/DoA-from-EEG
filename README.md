@@ -4,6 +4,3 @@ electroencephalograph beta frequency band" by Dr. Tianning Li and Dr. Peng Wen (
 
 Graphs displaying the coefficient of determination for each extracted feature for each frequency band can be found in the Graphs folder. The x-axis of the graphs represents the frequency bands defined in fft.py with indices 1-20 representing the amplitude of these frequency bands and indices 21-40 representing the power.
 
-The correlation values produced were poor. Following a thorough review for bugs, checks to see if the data can be denoised any further, and resampling of the data to ensure a even distribution of anaesthetic states, all without improvement in the correlation values, I can only conclude that the results of the paper cannot be reproduced using this particular data set. 
-
-
